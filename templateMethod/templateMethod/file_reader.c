@@ -1,25 +1,31 @@
 #include"stdio.h"	//为了使用 FILE,代表文件类型
 #include"stdlib.h"	//为了使用INT_MAX, INT_MIN
 
-int read_file(const char *pFname, int(*processor)(FILE *fp))
-	//int (*processor)(FILE *fp)函数指针：
-	//有了函数指针，就可以将函数作为参数传入
-	//int：返回值类型为int
-	//（*processor)函数指针名为processor,前面加*代表这是一个函数指针
-	//(FILE *fp)代表传入的参数类型
+//修改函数，使其可以返回非int值
+typedef struct FileReaderContext
 {
-	FILE* fp = fopen(pFname, "r");	//打开一个名为pFname的文件，返回文件指针
-	if (fp == NULL)					//打开失败则返回-1
+	const char* const pFname;
+	void(*const processor)(struct FileReaderContext *pThis, FILE *fp);
+}FileReaderContext;
+
+typedef struct {
+	FileReaderContext base;
+	int result;
+} MyFileReaderContext;
+
+int read_file(FileReaderContext *pCtx)
+{
+	FILE *fp = fopen(pCtx->pFname, "r");
+	if (fp == NULL)
 	{
 		return -1;
 	}
 
-	int ret = processor(fp);			//通过函数指针调用函数processor,返回状态值ret
+	pCtx->processor(pCtx, fp);
 
-	fclose(fp);						//关闭文件
-	return ret;
+	fclose(fp);
+	return 0;
 }
-
 
 static int range_processor(FILE *fp)		//静态函数，只在本文件中可见
 {
@@ -41,7 +47,18 @@ static int range_processor(FILE *fp)		//静态函数，只在本文件中可见
 	return max - min;
 }
 
-int range(const char* pFname)
+static void calc_range(FileReaderContext *p, FILE *fp)
 {
-	return read_file(pFname, range_processor);
+	MyFileReaderContext *pCtx = (MyFileReaderContext *)p;
+	pCtx->result = range_processor(fp);
+}
+
+int range(const char *pFname) {
+	MyFileReaderContext	ctx = { {pFname, calc_range}, 0 };
+
+	if (read_file(&ctx.base) != 0)
+	{
+		fprintf(stderr, "无法打开文件 '%s'。\n", pFname);
+	}
+	return ctx.result;
 }
