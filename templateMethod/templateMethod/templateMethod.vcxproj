@@ -112,7 +112,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="file_accessor.c" />
     <ClCompile Include="file_reader.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="file_accessor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

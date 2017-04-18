@@ -15,8 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="file_reader.c">
-      <Filter>头文件</Filter>
+    <ClCompile Include="file_accessor.c">
+      <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="file_reader.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="file_accessor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
